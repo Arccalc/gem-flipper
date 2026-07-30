@@ -17,6 +17,10 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+import uvicorn
+import webbrowser
+import threading
+
 POE_NINJA_ITEM_OVERVIEW = (
     "https://poe.ninja/poe1/api/economy/stash/current/item/overview"
 )
@@ -356,9 +360,18 @@ async def lifespan(app: FastAPI):
         pass
 
 
+import os
+import sys
+
+def get_resource_path(relative_path: str) -> str:
+    """Get absolute path to resource, works for dev and for PyInstaller"""
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
+
 app = FastAPI(title="Gem Flipper", lifespan=lifespan)
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory=get_resource_path("static")), name="static")
+templates = Jinja2Templates(directory=get_resource_path("templates"))
 
 # Bump when static JS/CSS change so browsers don't keep a stale app.js
 STATIC_VERSION = "2"
@@ -515,6 +528,9 @@ async def api_refresh(league: str | None = None):
 
 
 if __name__ == "__main__":
-    import uvicorn
+    def open_browser():
+        time.sleep(1.5)
+        webbrowser.open("http://127.0.0.1:8765")
 
-    uvicorn.run("app:app", host="127.0.0.1", port=8765, reload=False)
+    threading.Thread(target=open_browser, daemon=True).start()
+    uvicorn.run(app, host="127.0.0.1", port=8765, reload=False)
