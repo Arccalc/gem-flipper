@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+gems_cache.json
+*.log
+.DS_Store
+.vscode/
+.idea/
+scratch/
+LOG.md
+CONTEXT.md
+1.md
+

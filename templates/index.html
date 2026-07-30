@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gem Flipper — L1 → Max | poe.ninja</title>
+  <link rel="stylesheet" href="/static/style.css?v={{ static_version }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="app">
+    <header class="header">
+      <div class="brand">
+        <div class="brand-mark">◆</div>
+        <div>
+          <h1>Gem Flipper</h1>
+          <p class="subtitle" id="subtitle">L1 → max level · quality 0 · uncorrupted · Allflame</p>
+        </div>
+      </div>
+      <div class="header-meta">
+        <div class="mode-toggle" role="group" aria-label="Режим флипов">
+          <button type="button" class="mode-btn active" data-mode="normal" id="modeNormal">
+            Normal
+          </button>
+          <button type="button" class="mode-btn" data-mode="corrupt" id="modeCorrupt" title="L1 q0 uncorrupted → L21 q0 corrupted">
+            Corrupt
+          </button>
+        </div>
+        <div class="status-pill" id="statusPill">
+          <span class="dot" id="statusDot"></span>
+          <span id="statusText">загрузка…</span>
+        </div>
+        <div class="countdown" title="До авто-обновления">
+          <span class="label">refresh</span>
+          <span id="countdown">—:—</span>
+        </div>
+        <button type="button" class="btn" id="refreshBtn" title="Обновить сейчас">
+          ↻ Обновить
+        </button>
+      </div>
+    </header>
+
+    <section class="panel filters">
+      <div class="filter-group">
+        <label for="minListings">Мин. листингов (с обеих сторон)</label>
+        <input type="number" id="minListings" min="0" value="20" step="1" />
+        <span class="hint">больше = достовернее цена</span>
+      </div>
+      <div class="filter-group">
+        <label for="minProfit">Мин. профит (chaos)</label>
+        <input type="number" id="minProfit" min="0" value="0" step="1" />
+      </div>
+      <div class="filter-group">
+        <label for="minRoi">Мин. ROI %</label>
+        <input type="number" id="minRoi" min="0" value="0" step="1" />
+      </div>
+      <div class="filter-group grow">
+        <label for="search">Поиск гема</label>
+        <input type="search" id="search" placeholder="например Bladefall, Enlighten…" />
+      </div>
+    </section>
+
+    <section class="stats" id="stats">
+      <div class="stat">
+        <span class="stat-value" id="statCount">—</span>
+        <span class="stat-label">вариантов</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="statTopProfit">—</span>
+        <span class="stat-label">топ профит</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="statLeague">{{ default_league }}</span>
+        <span class="stat-label">лига</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="statAge">—</span>
+        <span class="stat-label">данные</span>
+      </div>
+    </section>
+
+    <section class="table-wrap">
+      <table class="gems-table" id="gemsTable">
+        <thead>
+          <tr>
+            <th class="col-rank">#</th>
+            <th class="col-gem sortable" data-sort="name">
+              Гем <span class="sort-ind" data-ind="name"></span>
+            </th>
+            <th class="num sortable" data-sort="buy">
+              L1 купить <span class="sort-ind" data-ind="buy"></span>
+            </th>
+            <th class="num sortable" data-sort="sell" id="thSell">
+              Max продать <span class="sort-ind" data-ind="sell"></span>
+            </th>
+            <th class="num sortable" data-sort="profit">
+              Профит <span class="sort-ind" data-ind="profit"></span>
+            </th>
+            <th class="num sortable" data-sort="roi">
+              ROI <span class="sort-ind" data-ind="roi"></span>
+            </th>
+            <th class="num sortable" data-sort="buy_listings">
+              Листинги L1 <span class="sort-ind" data-ind="buy_listings"></span>
+            </th>
+            <th class="num sortable" data-sort="sell_listings" id="thSellListings">
+              Листинги Max <span class="sort-ind" data-ind="sell_listings"></span>
+            </th>
+            <th class="col-links">Ссылки</th>
+          </tr>
+        </thead>
+        <tbody id="gemsBody">
+          <tr class="empty-row">
+            <td colspan="9">Загружаем данные с poe.ninja…</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer class="footer">
+      <p>
+        Данные: <a href="https://poe.ninja/poe1/economy/allflame/skill-gems?level=1&quality=0-19&corrupted=No" target="_blank" rel="noopener">poe.ninja Skill Gems</a>
+        · авто-обновление каждые {{ (refresh_seconds // 60) }} мин
+        · quality 0 (0–19)
+      </p>
+      <p class="muted" id="footerHint">
+        Normal: профит = цена max uncorrupted − L1. Corrupt: профит = цена L21 corrupted − L1. Кликни заголовок — сортировка.
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    window.GEM_FLIPPER = {
+      refreshSeconds: {{ refresh_seconds }},
+    };
+  </script>
+  <script src="/static/app.js?v={{ static_version }}"></script>
+</body>
+</html>

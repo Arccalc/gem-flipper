@@ -1,0 +1,53 @@
+# Gem Flipper
+
+Локальный трекер для Path of Exile: ищет гемы, которые выгодно **купить на 1 уровне** и **продать на максимальном**, по данным [poe.ninja](https://poe.ninja/poe1/economy/allflame/skill-gems?level=1&quality=0-19&corrupted=No).
+
+## Что делает
+
+- Тянет Skill Gems из API poe.ninja (лига **Allflame** по умолчанию)
+- Фильтрует: **quality 0** (бакет 0–19 на ninja) и **не corrupted**
+- Для каждого гема берёт цену **L1** и **максимального доступного уровня** (20 / 5 / 3 и т.д.)
+- Считает **профит** (max − L1) и **ROI**
+- Учитывает **число листингов** с обеих сторон (чтобы цена была достоверной)
+- **Авто-обновление каждые 20 минут**
+
+## Запуск
+
+```bash
+git clone https://github.com/Arccalc/gem-flipper.git
+cd gem-flipper
+python -m venv .venv
+# Для Windows:
+.venv\Scripts\activate
+# Для Linux/macOS:
+# source .venv/bin/activate
+
+pip install -r requirements.txt
+python app.py
+```
+
+Открой в браузере: **http://127.0.0.1:8765**
+
+## Фильтры в UI
+
+| Фильтр | Смысл |
+|--------|--------|
+| Мин. листингов | Минимум на **обеих** сторонах (L1 и max). Больше = надёжнее |
+| Мин. профит | Отсечь мелкие разницы в chaos |
+| Мин. ROI % | Отсечь дорогие гемы с маленькой отдачей |
+| Поиск | Имя гема |
+| Сортировка | profit / ROI / ликвидность / цены |
+
+## API
+
+- `GET /api/flips?min_listings=20&min_profit=0&min_roi=0&search=&sort=profit`
+- `GET /api/status`
+- `POST /api/refresh` — принудительное обновление
+
+## Источник данных
+
+```
+GET https://poe.ninja/poe1/api/economy/stash/current/item/overview?league=Allflame&type=SkillGem
+```
+
+Не долби API чаще, чем нужно: данные на ninja и так обновляются ~раз в 15 минут. Приложение кэширует на 20 минут.
