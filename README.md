@@ -1,79 +1,82 @@
 # Gem Flipper
 
-Локальный трекер для Path of Exile: ищет гемы, которые выгодно **купить на 1 уровне** и **продать на максимальном**, по данным [poe.ninja](https://poe.ninja/poe1/economy/allflame/skill-gems?level=1&quality=0-19&corrupted=No).
+Local Path of Exile tracker: finds gems that are profitable to **buy at level 1** and **sell at max level**, using data from [poe.ninja](https://poe.ninja/poe1/economy/allflame/skill-gems?level=1&quality=0-19&corrupted=No).
 
-## Что делает
+## Features
 
-- Тянет Skill Gems из API poe.ninja (лига **Allflame** по умолчанию)
-- Фильтрует: **quality 0** (бакет 0–19 на ninja) и **не corrupted**
-- Для каждого гема берёт цену **L1** и **максимального доступного уровня** (20 / 5 / 3 и т.д.)
-- Считает **профит** (max − L1) и **ROI**
-- Учитывает **число листингов** с обеих сторон (чтобы цена была достоверной)
-- **Авто-обновление каждые 20 минут**
+- Pulls Skill Gems from the poe.ninja API (default league: **Allflame**)
+- Filters: **quality 0** (0–19 bucket on ninja) and **uncorrupted**
+- For each gem, pairs **L1** price with the **highest available level** (20 / 5 / 3, etc.)
+- Calculates **profit** (max − L1) and **ROI**
+- Considers **listing counts** on both sides (so prices are more reliable)
+- **Corrupt mode**: L1 uncorrupted → max corrupted (+1 level)
+- **Auto-refresh every 20 minutes**
+- **UI language**: English / Russian (toggle in the header)
 
-## Быстрый запуск
+## Quick start
 
-### Вариант 1: Без установки Python (Готовый EXE для Windows)
-1. Перейдите в раздел **[Releases](https://github.com/Arccalc/gem-flipper/releases)** справа.
-2. Скачайте архив **`GemFlipper-v1.0.0-Windows.zip`** и распакуйте его.
-3. Запустите файл **`GemFlipper.exe`**.
-4. Браузер автоматически откроется по адресу **http://127.0.0.1:8765**.
+### Option 1: No Python install (Windows EXE)
 
----
-
-### Вариант 2: Запуск из исходников через `run.bat` (Windows)
-1. Скачайте ZIP-архив с кодом (кнопка **Code** -> **Download ZIP**) и распакуйте.
-2. Запустите файл **`run.bat`** (требуется установленный Python).
-3. Откройте в браузере: **http://127.0.0.1:8765**.
+1. Open **[Releases](https://github.com/Arccalc/gem-flipper/releases)** on the right.
+2. Download **`GemFlipper-v1.0.0-Windows.zip`** and extract it.
+3. Run **`GemFlipper.exe`**.
+4. Your browser opens at **http://127.0.0.1:8765**.
 
 ---
 
-### Вариант 2: Запуск через Командную строку / Git Bash
+### Option 2: From source with `run.bat` (Windows)
 
-1. Откройте консоль/командную строку.
-2. Загрузите проект и перейдите в его папку:
+1. Download the ZIP (**Code** → **Download ZIP**) and extract it.
+2. Run **`run.bat`** (requires Python installed).
+3. Open **http://127.0.0.1:8765** in your browser.
+
+---
+
+### Option 3: Command line / Git Bash
+
+1. Clone the repo and enter the folder:
 ```bash
 git clone https://github.com/Arccalc/gem-flipper.git
 cd gem-flipper
 ```
-3. Создайте и активируйте виртуальное окружение:
+2. Create and activate a virtual environment:
 ```bash
-# Создать окружение:
+# Create:
 python -m venv .venv
 
-# Активировать (Windows):
+# Activate (Windows):
 .venv\Scripts\activate
 
-# Активировать (Linux / macOS):
+# Activate (Linux / macOS):
 # source .venv/bin/activate
 ```
-4. Установите зависимости и запустите:
+3. Install dependencies and run:
 ```bash
 pip install -r requirements.txt
 python app.py
 ```
-5. Перейдите в браузере по адресу: **http://127.0.0.1:8765**
+4. Open **http://127.0.0.1:8765** in your browser.
 
-## Фильтры в UI
+## UI filters
 
-| Фильтр | Смысл |
-|--------|--------|
-| Мин. листингов | Минимум на **обеих** сторонах (L1 и max). Больше = надёжнее |
-| Мин. профит | Отсечь мелкие разницы в chaos |
-| Мин. ROI % | Отсечь дорогие гемы с маленькой отдачей |
-| Поиск | Имя гема |
-| Сортировка | profit / ROI / ликвидность / цены |
+| Filter | Meaning |
+|--------|---------|
+| Min listings | Minimum on **both** sides (L1 and max). Higher = more reliable |
+| Min profit | Drop small chaos spreads |
+| Min ROI % | Drop expensive gems with weak returns |
+| Search | Gem name |
+| Sort | profit / ROI / liquidity / prices (click column headers) |
 
 ## API
 
-- `GET /api/flips?min_listings=20&min_profit=0&min_roi=0&search=&sort=profit`
+- `GET /api/flips?min_listings=20&min_profit=0&min_roi=0&search=&sort=profit&mode=normal|corrupt`
 - `GET /api/status`
-- `POST /api/refresh` — принудительное обновление
+- `POST /api/refresh` — force refresh
 
-## Источник данных
+## Data source
 
 ```
 GET https://poe.ninja/poe1/api/economy/stash/current/item/overview?league=Allflame&type=SkillGem
 ```
 
-Не долби API чаще, чем нужно: данные на ninja и так обновляются ~раз в 15 минут. Приложение кэширует на 20 минут.
+Do not hammer the API: ninja data already updates about every 15 minutes. This app caches for 20 minutes.

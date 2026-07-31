@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -21,7 +21,11 @@
         </div>
       </div>
       <div class="header-meta">
-        <div class="mode-toggle" role="group" aria-label="Режим флипов">
+        <div class="mode-toggle lang-toggle" role="group" aria-label="Language" id="langToggle">
+          <button type="button" class="mode-btn active" data-lang="en" id="langEn" title="English">EN</button>
+          <button type="button" class="mode-btn" data-lang="ru" id="langRu" title="Русский">RU</button>
+        </div>
+        <div class="mode-toggle" role="group" aria-label="Flip mode" id="modeToggle">
           <button type="button" class="mode-btn active" data-mode="normal" id="modeNormal">
             Normal
           </button>
@@ -31,54 +35,54 @@
         </div>
         <div class="status-pill" id="statusPill">
           <span class="dot" id="statusDot"></span>
-          <span id="statusText">загрузка…</span>
+          <span id="statusText">loading…</span>
         </div>
-        <div class="countdown" title="До авто-обновления">
-          <span class="label">refresh</span>
+        <div class="countdown" id="countdownWrap" title="Until auto-refresh">
+          <span class="label" id="countdownLabel">refresh</span>
           <span id="countdown">—:—</span>
         </div>
-        <button type="button" class="btn" id="refreshBtn" title="Обновить сейчас">
-          ↻ Обновить
+        <button type="button" class="btn" id="refreshBtn" title="Refresh now">
+          ↻ Refresh
         </button>
       </div>
     </header>
 
     <section class="panel filters">
       <div class="filter-group">
-        <label for="minListings">Мин. листингов (с обеих сторон)</label>
+        <label for="minListings" id="labelMinListings">Min listings (both sides)</label>
         <input type="number" id="minListings" min="0" value="20" step="1" />
-        <span class="hint">больше = достовернее цена</span>
+        <span class="hint" id="hintMinListings">higher = more reliable price</span>
       </div>
       <div class="filter-group">
-        <label for="minProfit">Мин. профит (chaos)</label>
+        <label for="minProfit" id="labelMinProfit">Min profit (chaos)</label>
         <input type="number" id="minProfit" min="0" value="0" step="1" />
       </div>
       <div class="filter-group">
-        <label for="minRoi">Мин. ROI %</label>
+        <label for="minRoi" id="labelMinRoi">Min ROI %</label>
         <input type="number" id="minRoi" min="0" value="0" step="1" />
       </div>
       <div class="filter-group grow">
-        <label for="search">Поиск гема</label>
-        <input type="search" id="search" placeholder="например Bladefall, Enlighten…" />
+        <label for="search" id="labelSearch">Search gem</label>
+        <input type="search" id="search" placeholder="e.g. Bladefall, Enlighten…" />
       </div>
     </section>
 
     <section class="stats" id="stats">
       <div class="stat">
         <span class="stat-value" id="statCount">—</span>
-        <span class="stat-label">вариантов</span>
+        <span class="stat-label" id="statLabelCount">options</span>
       </div>
       <div class="stat">
         <span class="stat-value" id="statTopProfit">—</span>
-        <span class="stat-label">топ профит</span>
+        <span class="stat-label" id="statLabelTopProfit">top profit</span>
       </div>
       <div class="stat">
         <span class="stat-value" id="statLeague">{{ default_league }}</span>
-        <span class="stat-label">лига</span>
+        <span class="stat-label" id="statLabelLeague">league</span>
       </div>
       <div class="stat">
         <span class="stat-value" id="statAge">—</span>
-        <span class="stat-label">данные</span>
+        <span class="stat-label" id="statLabelAge">data age</span>
       </div>
     </section>
 
@@ -88,45 +92,45 @@
           <tr>
             <th class="col-rank">#</th>
             <th class="col-gem sortable" data-sort="name">
-              Гем <span class="sort-ind" data-ind="name"></span>
+              <span id="thName">Gem</span> <span class="sort-ind" data-ind="name"></span>
             </th>
             <th class="num sortable" data-sort="buy">
-              L1 купить <span class="sort-ind" data-ind="buy"></span>
+              <span id="thBuy">L1 buy</span> <span class="sort-ind" data-ind="buy"></span>
             </th>
             <th class="num sortable" data-sort="sell" id="thSell">
-              Max продать <span class="sort-ind" data-ind="sell"></span>
+              <span id="thSellText">Max sell</span> <span class="sort-ind" data-ind="sell"></span>
             </th>
             <th class="num sortable" data-sort="profit">
-              Профит <span class="sort-ind" data-ind="profit"></span>
+              <span id="thProfit">Profit</span> <span class="sort-ind" data-ind="profit"></span>
             </th>
             <th class="num sortable" data-sort="roi">
               ROI <span class="sort-ind" data-ind="roi"></span>
             </th>
             <th class="num sortable" data-sort="buy_listings">
-              Листинги L1 <span class="sort-ind" data-ind="buy_listings"></span>
+              <span id="thBuyListings">L1 listings</span> <span class="sort-ind" data-ind="buy_listings"></span>
             </th>
             <th class="num sortable" data-sort="sell_listings" id="thSellListings">
-              Листинги Max <span class="sort-ind" data-ind="sell_listings"></span>
+              <span id="thSellListingsText">Max listings</span> <span class="sort-ind" data-ind="sell_listings"></span>
             </th>
-            <th class="col-links">Ссылки</th>
+            <th class="col-links" id="thLinks">Links</th>
           </tr>
         </thead>
         <tbody id="gemsBody">
           <tr class="empty-row">
-            <td colspan="9">Загружаем данные с poe.ninja…</td>
+            <td colspan="9" id="emptyLoading">Loading data from poe.ninja…</td>
           </tr>
         </tbody>
       </table>
     </section>
 
     <footer class="footer">
-      <p>
-        Данные: <a href="https://poe.ninja/poe1/economy/allflame/skill-gems?level=1&quality=0-19&corrupted=No" target="_blank" rel="noopener">poe.ninja Skill Gems</a>
-        · авто-обновление каждые {{ (refresh_seconds // 60) }} мин
+      <p id="footerData">
+        Data: <a href="https://poe.ninja/poe1/economy/allflame/skill-gems?level=1&quality=0-19&corrupted=No" target="_blank" rel="noopener">poe.ninja Skill Gems</a>
+        · auto-refresh every {{ (refresh_seconds // 60) }} min
         · quality 0 (0–19)
       </p>
       <p class="muted" id="footerHint">
-        Normal: профит = цена max uncorrupted − L1. Corrupt: профит = цена L21 corrupted − L1. Кликни заголовок — сортировка.
+        Normal: profit = max uncorrupted price − L1. Corrupt: profit = L21 corrupted price − L1. Click a header to sort.
       </p>
     </footer>
   </div>
@@ -134,6 +138,7 @@
   <script>
     window.GEM_FLIPPER = {
       refreshSeconds: {{ refresh_seconds }},
+      refreshMinutes: {{ refresh_seconds // 60 }},
     };
   </script>
   <script src="/static/app.js?v={{ static_version }}"></script>

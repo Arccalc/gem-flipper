@@ -1,10 +1,151 @@
 (() => {
   const $ = (id) => document.getElementById(id);
 
+  const I18N = {
+    en: {
+      langAria: "Language",
+      modeAria: "Flip mode",
+      modeNormal: "Normal",
+      modeCorrupt: "Corrupt",
+      modeCorruptTitle: "L1 q0 uncorrupted → L21 q0 corrupted",
+      statusLoading: "loading…",
+      statusUpdating: "updating…",
+      statusFetching: "fetching poe.ninja…",
+      statusOk: "up to date",
+      statusError: "error: {error}",
+      statusManual: "manual refresh…",
+      countdownTitle: "Until auto-refresh",
+      countdownLabel: "refresh",
+      refreshBtn: "↻ Refresh",
+      refreshTitle: "Refresh now",
+      labelMinListings: "Min listings (both sides)",
+      hintMinListings: "higher = more reliable price",
+      labelMinProfit: "Min profit (chaos)",
+      labelMinRoi: "Min ROI %",
+      labelSearch: "Search gem",
+      searchPlaceholder: "e.g. Bladefall, Enlighten…",
+      statCount: "options",
+      statTopProfit: "top profit",
+      statLeague: "league",
+      statAge: "data age",
+      thName: "Gem",
+      thBuy: "L1 buy",
+      thSell: "Max sell",
+      thSellCorrupt: "Max c sell",
+      thProfit: "Profit",
+      thBuyListings: "L1 listings",
+      thSellListings: "Max listings",
+      thSellListingsCorrupt: "Max c listings",
+      thLinks: "Links",
+      emptyLoading: "Loading data from poe.ninja…",
+      emptyLoadingMode: "Loading {mode} flips…",
+      emptyNone:
+        "No options match the current filters. Try lowering min listings or profit.",
+      emptyError: "Failed to load data: {error}",
+      subtitleNormal: "L1 → max level · quality 0 · uncorrupted · Allflame",
+      subtitleCorrupt: "L1 → max corrupted (+1) · quality 0 · Allflame",
+      footerData:
+        'Data: <a href="https://poe.ninja/poe1/economy/allflame/skill-gems?level=1&quality=0-19&corrupted=No" target="_blank" rel="noopener">poe.ninja Skill Gems</a> · auto-refresh every {minutes} min · quality 0 (0–19)',
+      footerHint:
+        "Normal: profit = max uncorrupted price − L1. Corrupt: profit = L21 corrupted price − L1. Click a header to sort.",
+      ageSeconds: "{n}s ago",
+      ageMinutes: "{n}m ago",
+      ageHours: "{h}h {m}m",
+      metaNormal: "L1 → L{level} · q0 · uncorrupted",
+      metaCorrupt: "L1 → L{level}c · q0 · corrupted",
+      buyL1: "Buy L1",
+      sellMax: "Sell L{level}",
+      sellMaxCorrupt: "Sell L{level}c",
+      ninja: "ninja",
+    },
+    ru: {
+      langAria: "Язык",
+      modeAria: "Режим флипов",
+      modeNormal: "Normal",
+      modeCorrupt: "Corrupt",
+      modeCorruptTitle: "L1 q0 uncorrupted → L21 q0 corrupted",
+      statusLoading: "загрузка…",
+      statusUpdating: "обновление…",
+      statusFetching: "качаем poe.ninja…",
+      statusOk: "актуально",
+      statusError: "ошибка: {error}",
+      statusManual: "ручное обновление…",
+      countdownTitle: "До авто-обновления",
+      countdownLabel: "refresh",
+      refreshBtn: "↻ Обновить",
+      refreshTitle: "Обновить сейчас",
+      labelMinListings: "Мин. листингов (с обеих сторон)",
+      hintMinListings: "больше = достовернее цена",
+      labelMinProfit: "Мин. профит (chaos)",
+      labelMinRoi: "Мин. ROI %",
+      labelSearch: "Поиск гема",
+      searchPlaceholder: "например Bladefall, Enlighten…",
+      statCount: "вариантов",
+      statTopProfit: "топ профит",
+      statLeague: "лига",
+      statAge: "данные",
+      thName: "Гем",
+      thBuy: "L1 купить",
+      thSell: "Max продать",
+      thSellCorrupt: "Max c продать",
+      thProfit: "Профит",
+      thBuyListings: "Листинги L1",
+      thSellListings: "Листинги Max",
+      thSellListingsCorrupt: "Листинги Max c",
+      thLinks: "Ссылки",
+      emptyLoading: "Загружаем данные с poe.ninja…",
+      emptyLoadingMode: "Загружаем {mode} флипы…",
+      emptyNone:
+        "Нет вариантов под текущие фильтры. Попробуй снизить мин. листинги или профит.",
+      emptyError: "Не удалось загрузить данные: {error}",
+      subtitleNormal: "L1 → max level · quality 0 · uncorrupted · Allflame",
+      subtitleCorrupt: "L1 → max corrupted (+1) · quality 0 · Allflame",
+      footerData:
+        'Данные: <a href="https://poe.ninja/poe1/economy/allflame/skill-gems?level=1&quality=0-19&corrupted=No" target="_blank" rel="noopener">poe.ninja Skill Gems</a> · авто-обновление каждые {minutes} мин · quality 0 (0–19)',
+      footerHint:
+        "Normal: профит = цена max uncorrupted − L1. Corrupt: профит = цена L21 corrupted − L1. Кликни заголовок — сортировка.",
+      ageSeconds: "{n}с назад",
+      ageMinutes: "{n}м назад",
+      ageHours: "{h}ч {m}м",
+      metaNormal: "L1 → L{level} · q0 · uncorrupted",
+      metaCorrupt: "L1 → L{level}c · q0 · corrupted",
+      buyL1: "Buy L1",
+      sellMax: "Sell L{level}",
+      sellMaxCorrupt: "Sell L{level}c",
+      ninja: "ninja",
+    },
+  };
+
+  const STORAGE_KEY = "gemflipper_lang";
+
+  /** @type {"en" | "ru"} */
+  let lang =
+    localStorage.getItem(STORAGE_KEY) === "ru" ||
+    localStorage.getItem(STORAGE_KEY) === "en"
+      ? /** @type {"en" | "ru"} */ (localStorage.getItem(STORAGE_KEY))
+      : "en";
+
+  /**
+   * @param {string} key
+   * @param {Record<string, string | number>} [params]
+   */
+  function t(key, params) {
+    const dict = I18N[lang] || I18N.en;
+    let s = dict[key] ?? I18N.en[key] ?? key;
+    if (params) {
+      for (const [k, v] of Object.entries(params)) {
+        s = s.replaceAll(`{${k}}`, String(v));
+      }
+    }
+    return s;
+  }
+
   const els = {
     statusPill: $("statusPill"),
     statusText: $("statusText"),
     countdown: $("countdown"),
+    countdownWrap: $("countdownWrap"),
+    countdownLabel: $("countdownLabel"),
     refreshBtn: $("refreshBtn"),
     minListings: $("minListings"),
     minProfit: $("minProfit"),
@@ -19,8 +160,30 @@
     subtitle: $("subtitle"),
     thSell: $("thSell"),
     thSellListings: $("thSellListings"),
+    thSellText: $("thSellText"),
+    thSellListingsText: $("thSellListingsText"),
     modeNormal: $("modeNormal"),
     modeCorrupt: $("modeCorrupt"),
+    langEn: $("langEn"),
+    langRu: $("langRu"),
+    langToggle: $("langToggle"),
+    modeToggle: $("modeToggle"),
+    labelMinListings: $("labelMinListings"),
+    hintMinListings: $("hintMinListings"),
+    labelMinProfit: $("labelMinProfit"),
+    labelMinRoi: $("labelMinRoi"),
+    labelSearch: $("labelSearch"),
+    statLabelCount: $("statLabelCount"),
+    statLabelTopProfit: $("statLabelTopProfit"),
+    statLabelLeague: $("statLabelLeague"),
+    statLabelAge: $("statLabelAge"),
+    thName: $("thName"),
+    thBuy: $("thBuy"),
+    thProfit: $("thProfit"),
+    thBuyListings: $("thBuyListings"),
+    thLinks: $("thLinks"),
+    footerData: $("footerData"),
+    footerHint: $("footerHint"),
   };
 
   /** @type {any[]} */
@@ -31,9 +194,65 @@
   let sortOrder = "desc";
   /** @type {"normal" | "corrupt"} */
   let mode = "normal";
+  /** Last status for re-translate on language switch */
+  let lastStatus = { kind: "loading", key: "statusLoading", params: null };
 
   function isCorruptMode() {
     return mode === "corrupt";
+  }
+
+  function setText(el, text) {
+    if (el) el.textContent = text;
+  }
+
+  function applyStaticI18n() {
+    document.documentElement.lang = lang;
+
+    if (els.langToggle) els.langToggle.setAttribute("aria-label", t("langAria"));
+    if (els.modeToggle) els.modeToggle.setAttribute("aria-label", t("modeAria"));
+    if (els.langEn) els.langEn.classList.toggle("active", lang === "en");
+    if (els.langRu) els.langRu.classList.toggle("active", lang === "ru");
+
+    setText(els.modeNormal, t("modeNormal"));
+    setText(els.modeCorrupt, t("modeCorrupt"));
+    if (els.modeCorrupt) els.modeCorrupt.title = t("modeCorruptTitle");
+
+    if (els.countdownWrap) els.countdownWrap.title = t("countdownTitle");
+    setText(els.countdownLabel, t("countdownLabel"));
+    if (els.refreshBtn) {
+      els.refreshBtn.textContent = t("refreshBtn");
+      els.refreshBtn.title = t("refreshTitle");
+    }
+
+    setText(els.labelMinListings, t("labelMinListings"));
+    setText(els.hintMinListings, t("hintMinListings"));
+    setText(els.labelMinProfit, t("labelMinProfit"));
+    setText(els.labelMinRoi, t("labelMinRoi"));
+    setText(els.labelSearch, t("labelSearch"));
+    if (els.search) els.search.placeholder = t("searchPlaceholder");
+
+    setText(els.statLabelCount, t("statCount"));
+    setText(els.statLabelTopProfit, t("statTopProfit"));
+    setText(els.statLabelLeague, t("statLeague"));
+    setText(els.statLabelAge, t("statAge"));
+
+    setText(els.thName, t("thName"));
+    setText(els.thBuy, t("thBuy"));
+    setText(els.thProfit, t("thProfit"));
+    setText(els.thBuyListings, t("thBuyListings"));
+    setText(els.thLinks, t("thLinks"));
+
+    const minutes =
+      (window.GEM_FLIPPER && window.GEM_FLIPPER.refreshMinutes) || 20;
+    if (els.footerData) {
+      els.footerData.innerHTML = t("footerData", { minutes });
+    }
+    setText(els.footerHint, t("footerHint"));
+
+    // Re-apply last status message in new language
+    if (lastStatus.key) {
+      setStatus(lastStatus.kind, lastStatus.key, lastStatus.params || undefined, true);
+    }
   }
 
   function updateModeChrome() {
@@ -43,20 +262,38 @@
     if (els.modeCorrupt) els.modeCorrupt.classList.toggle("active", corrupt);
     if (els.subtitle) {
       els.subtitle.textContent = corrupt
-        ? "L1 → max corrupted (+1) · quality 0 · Allflame"
-        : "L1 → max level · quality 0 · uncorrupted · Allflame";
+        ? t("subtitleCorrupt")
+        : t("subtitleNormal");
     }
-    if (els.thSell) {
-      els.thSell.innerHTML = corrupt
-        ? `Max c продать <span class="sort-ind" data-ind="sell"></span>`
-        : `Max продать <span class="sort-ind" data-ind="sell"></span>`;
+    if (els.thSellText) {
+      els.thSellText.textContent = corrupt ? t("thSellCorrupt") : t("thSell");
     }
-    if (els.thSellListings) {
-      els.thSellListings.innerHTML = corrupt
-        ? `Листинги Max c <span class="sort-ind" data-ind="sell_listings"></span>`
-        : `Листинги Max <span class="sort-ind" data-ind="sell_listings"></span>`;
+    if (els.thSellListingsText) {
+      els.thSellListingsText.textContent = corrupt
+        ? t("thSellListingsCorrupt")
+        : t("thSellListings");
     }
     updateSortIndicators();
+  }
+
+  function setLang(next) {
+    if (next !== "en" && next !== "ru") return;
+    if (lang === next) return;
+    lang = next;
+    localStorage.setItem(STORAGE_KEY, lang);
+    applyStaticI18n();
+    updateModeChrome();
+    // Re-render rows / empty state with new language
+    if (allFlips.length) {
+      applyView();
+    } else if (els.gemsBody) {
+      const emptyCell = els.gemsBody.querySelector(".empty-row td");
+      if (emptyCell) emptyCell.textContent = t("emptyLoading");
+    }
+    // Reformat age label if we have it stored on the element dataset
+    if (els.statAge && els.statAge.dataset.ageSeconds) {
+      els.statAge.textContent = formatAge(Number(els.statAge.dataset.ageSeconds));
+    }
   }
 
   function setMode(next) {
@@ -64,13 +301,12 @@
     if (mode === next) return;
     mode = next;
     updateModeChrome();
-    // Clear table immediately so mode switch is obvious while loading
     if (els.gemsBody) {
       els.gemsBody.innerHTML = `
         <tr class="empty-row">
-          <td colspan="9">Загружаем ${
-            next === "corrupt" ? "corrupt" : "normal"
-          } флипы…</td>
+          <td colspan="9">${escapeHtml(
+            t("emptyLoadingMode", { mode: next })
+          )}</td>
         </tr>`;
     }
     loadFlips();
@@ -92,11 +328,11 @@
   function formatAge(seconds) {
     if (seconds == null) return "—";
     const s = Math.max(0, Math.floor(seconds));
-    if (s < 60) return `${s}с назад`;
+    if (s < 60) return t("ageSeconds", { n: s });
     const m = Math.floor(s / 60);
-    if (m < 60) return `${m}м назад`;
+    if (m < 60) return t("ageMinutes", { n: m });
     const h = Math.floor(m / 60);
-    return `${h}ч ${m % 60}м`;
+    return t("ageHours", { h, m: m % 60 });
   }
 
   function formatCountdown(seconds) {
@@ -107,10 +343,32 @@
     return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
   }
 
-  function setStatus(kind, text) {
+  /**
+   * @param {string | null} kind
+   * @param {string} keyOrText  i18n key, or raw text if alreadyTranslated
+   * @param {Record<string, string | number> | null} [params]
+   * @param {boolean} [alreadyKey] when true, keyOrText is always an i18n key
+   */
+  function setStatus(kind, keyOrText, params, alreadyKey) {
     els.statusPill.classList.remove("ok", "err", "loading");
     if (kind) els.statusPill.classList.add(kind);
-    els.statusText.textContent = text;
+
+    // Prefer known keys so language switch can re-translate
+    const knownKeys = new Set([
+      "statusLoading",
+      "statusUpdating",
+      "statusFetching",
+      "statusOk",
+      "statusError",
+      "statusManual",
+    ]);
+    if (alreadyKey || knownKeys.has(keyOrText)) {
+      lastStatus = { kind, key: keyOrText, params: params || null };
+      els.statusText.textContent = t(keyOrText, params || undefined);
+    } else {
+      lastStatus = { kind, key: null, params: null };
+      els.statusText.textContent = keyOrText;
+    }
   }
 
   function sortValue(f, key) {
@@ -141,7 +399,8 @@
     const q = (els.search.value || "").trim().toLowerCase();
 
     let rows = allFlips.filter((item) => {
-      if (item.buy_listings < minListings || item.sell_listings < minListings) return false;
+      if (item.buy_listings < minListings || item.sell_listings < minListings)
+        return false;
       if (item.profit_chaos < minProfit) return false;
       if (item.roi_percent < minRoi) return false;
       if (q && !item.name.toLowerCase().includes(q)) return false;
@@ -173,7 +432,7 @@
     if (!flips.length) {
       els.gemsBody.innerHTML = `
         <tr class="empty-row">
-          <td colspan="9">Нет вариантов под текущие фильтры. Попробуй снизить мин. листинги или профит.</td>
+          <td colspan="9">${escapeHtml(t("emptyNone"))}</td>
         </tr>`;
       els.statCount.textContent = "0";
       els.statTopProfit.textContent = "—";
@@ -195,19 +454,33 @@
 
         const links = [];
         if (f.trade_buy_url) {
-          links.push(`<a class="link-btn" href="${f.trade_buy_url}" target="_blank" rel="noopener">Buy L1</a>`);
+          links.push(
+            `<a class="link-btn" href="${f.trade_buy_url}" target="_blank" rel="noopener">${escapeHtml(
+              t("buyL1")
+            )}</a>`
+          );
         }
         if (f.trade_sell_url) {
-          const sellLabel = isCorruptMode() ? `Sell L${f.max_level}c` : `Sell L${f.max_level}`;
-          links.push(`<a class="link-btn" href="${f.trade_sell_url}" target="_blank" rel="noopener">${sellLabel}</a>`);
+          const sellLabel = isCorruptMode()
+            ? t("sellMaxCorrupt", { level: f.max_level })
+            : t("sellMax", { level: f.max_level });
+          links.push(
+            `<a class="link-btn" href="${f.trade_sell_url}" target="_blank" rel="noopener">${escapeHtml(
+              sellLabel
+            )}</a>`
+          );
         }
         if (f.ninja_url) {
-          links.push(`<a class="link-btn" href="${f.ninja_url}" target="_blank" rel="noopener">ninja</a>`);
+          links.push(
+            `<a class="link-btn" href="${f.ninja_url}" target="_blank" rel="noopener">${escapeHtml(
+              t("ninja")
+            )}</a>`
+          );
         }
 
         const meta = isCorruptMode()
-          ? `L1 → L${f.max_level}c · q0 · corrupted`
-          : `L1 → L${f.max_level} · q0 · uncorrupted`;
+          ? t("metaCorrupt", { level: f.max_level })
+          : t("metaNormal", { level: f.max_level });
 
         return `
           <tr class="${top}">
@@ -217,7 +490,7 @@
                 ${icon}
                 <div>
                   <div class="gem-name">${escapeHtml(f.name)}</div>
-                  <div class="gem-meta">${meta}</div>
+                  <div class="gem-meta">${escapeHtml(meta)}</div>
                 </div>
               </div>
             </td>
@@ -271,45 +544,53 @@
   }
 
   async function loadFlips({ silent = false } = {}) {
-    if (!silent) setStatus("loading", "обновление…");
+    if (!silent) setStatus("loading", "statusUpdating");
     try {
       const res = await fetch(
-        `/api/flips?min_listings=0&limit=5000&sort=profit&order=desc&mode=${encodeURIComponent(mode)}`
+        `/api/flips?min_listings=0&limit=5000&sort=profit&order=desc&mode=${encodeURIComponent(
+          mode
+        )}`
       );
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
 
       if (data.error) {
-        setStatus("err", `ошибка: ${data.error}`);
+        setStatus("err", "statusError", { error: data.error });
       } else if (data.fetching && !(data.flips || []).length) {
-        setStatus("loading", "качаем poe.ninja…");
+        setStatus("loading", "statusFetching");
       } else {
-        setStatus("ok", "актуально");
+        setStatus("ok", "statusOk");
       }
 
       allFlips = data.flips || [];
       nextRefreshIn = data.next_refresh_in;
       els.statLeague.textContent = data.league || "—";
-      els.statAge.textContent = formatAge(data.age_seconds);
+      if (els.statAge) {
+        els.statAge.dataset.ageSeconds =
+          data.age_seconds != null ? String(data.age_seconds) : "";
+        els.statAge.textContent = formatAge(data.age_seconds);
+      }
       applyView();
       updateCountdown();
     } catch (err) {
-      setStatus("err", String(err.message || err));
+      setStatus("err", "statusError", { error: err.message || err });
       els.gemsBody.innerHTML = `
         <tr class="empty-row">
-          <td colspan="9">Не удалось загрузить данные: ${escapeHtml(err.message || err)}</td>
+          <td colspan="9">${escapeHtml(
+            t("emptyError", { error: err.message || err })
+          )}</td>
         </tr>`;
     }
   }
 
   async function forceRefresh() {
     els.refreshBtn.disabled = true;
-    setStatus("loading", "ручное обновление…");
+    setStatus("loading", "statusManual");
     try {
       await fetch("/api/refresh", { method: "POST" });
       await loadFlips();
     } catch (err) {
-      setStatus("err", String(err.message || err));
+      setStatus("err", "statusError", { error: err.message || err });
     } finally {
       els.refreshBtn.disabled = false;
     }
@@ -334,13 +615,25 @@
   });
   els.search.addEventListener("input", scheduleView);
   els.refreshBtn.addEventListener("click", forceRefresh);
-  if (els.modeNormal) els.modeNormal.addEventListener("click", () => setMode("normal"));
-  if (els.modeCorrupt) els.modeCorrupt.addEventListener("click", () => setMode("corrupt"));
-  // Event delegation fallback (works even if button refs were stale)
-  document.querySelector(".mode-toggle")?.addEventListener("click", (ev) => {
-    const btn = ev.target.closest("[data-mode]");
+  if (els.modeNormal)
+    els.modeNormal.addEventListener("click", () => setMode("normal"));
+  if (els.modeCorrupt)
+    els.modeCorrupt.addEventListener("click", () => setMode("corrupt"));
+  document.querySelector(".mode-toggle:not(.lang-toggle)")?.addEventListener(
+    "click",
+    (ev) => {
+      const btn = ev.target.closest("[data-mode]");
+      if (!btn) return;
+      setMode(btn.getAttribute("data-mode"));
+    }
+  );
+
+  if (els.langEn) els.langEn.addEventListener("click", () => setLang("en"));
+  if (els.langRu) els.langRu.addEventListener("click", () => setLang("ru"));
+  els.langToggle?.addEventListener("click", (ev) => {
+    const btn = ev.target.closest("[data-lang]");
     if (!btn) return;
-    setMode(btn.getAttribute("data-mode"));
+    setLang(btn.getAttribute("data-lang"));
   });
 
   els.gemsTable.querySelectorAll("th.sortable").forEach((th) => {
@@ -369,6 +662,7 @@
     }
   }, 1000);
 
+  applyStaticI18n();
   updateModeChrome();
   loadFlips();
 })();

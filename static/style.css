@@ -247,6 +247,20 @@ a:hover {
   box-shadow: inset 0 0 0 1px rgba(240, 113, 120, 0.4);
 }
 
+.lang-toggle .mode-btn {
+  min-width: 40px;
+  padding: 8px 10px;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.lang-toggle .mode-btn.active {
+  background: linear-gradient(180deg, #1a2434, #121820);
+  color: var(--buy);
+  box-shadow: inset 0 0 0 1px rgba(122, 162, 247, 0.4);
+}
+
 body.mode-corrupt .brand-mark {
   border-color: rgba(240, 113, 120, 0.4);
   color: #f07178;
