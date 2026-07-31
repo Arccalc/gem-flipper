@@ -374,7 +374,7 @@ app.mount("/static", StaticFiles(directory=get_resource_path("static")), name="s
 templates = Jinja2Templates(directory=get_resource_path("templates"))
 
 # Bump when static JS/CSS change so browsers don't keep a stale app.js
-STATIC_VERSION = "3"
+STATIC_VERSION = "4"
 
 
 @app.get("/", response_class=HTMLResponse)

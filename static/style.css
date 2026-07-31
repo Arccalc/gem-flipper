@@ -580,3 +580,86 @@ input[type="number"] {
   color: var(--text-muted);
   font-size: 0.8rem;
 }
+
+/* Ko-fi support button (floating cookie) */
+.kofi-btn {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 40;
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  text-decoration: none;
+  background: radial-gradient(circle at 50% 40%, rgba(255, 190, 90, 0.18), transparent 68%);
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(201, 140, 60, 0.22),
+    0 0 22px rgba(201, 140, 60, 0.22);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.kofi-btn img {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+  pointer-events: none;
+}
+
+.kofi-btn:hover {
+  transform: translateY(-3px) scale(1.07);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(201, 140, 60, 0.4),
+    0 0 30px rgba(201, 140, 60, 0.35);
+  text-decoration: none;
+}
+
+.kofi-btn:active {
+  transform: translateY(-1px) scale(1.02);
+}
+
+.kofi-tip {
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) translateX(4px);
+  white-space: nowrap;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--bg-panel);
+  border: 1px solid rgba(201, 140, 60, 0.35);
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s, transform 0.15s;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.kofi-btn:hover .kofi-tip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+@media (max-width: 640px) {
+  .kofi-btn {
+    right: 14px;
+    bottom: 14px;
+    width: 56px;
+    height: 56px;
+  }
+  .kofi-btn img {
+    width: 48px;
+    height: 48px;
+  }
+  .kofi-tip {
+    display: none;
+  }
+}

@@ -57,6 +57,8 @@
       sellMax: "Sell L{level}",
       sellMaxCorrupt: "Sell L{level}c",
       ninja: "ninja",
+      kofiTitle: "Support on Ko-fi",
+      kofiTip: "Support the developer",
     },
     ru: {
       langAria: "Язык",
@@ -113,6 +115,8 @@
       sellMax: "Sell L{level}",
       sellMaxCorrupt: "Sell L{level}c",
       ninja: "ninja",
+      kofiTitle: "Поддержать на Ko-fi",
+      kofiTip: "Поддержать разработчика",
     },
   };
 
@@ -184,6 +188,8 @@
     thLinks: $("thLinks"),
     footerData: $("footerData"),
     footerHint: $("footerHint"),
+    kofiBtn: $("kofiBtn"),
+    kofiTip: $("kofiTip"),
   };
 
   /** @type {any[]} */
@@ -248,6 +254,9 @@
       els.footerData.innerHTML = t("footerData", { minutes });
     }
     setText(els.footerHint, t("footerHint"));
+
+    if (els.kofiBtn) els.kofiBtn.title = t("kofiTitle");
+    setText(els.kofiTip, t("kofiTip"));
 
     // Re-apply last status message in new language
     if (lastStatus.key) {

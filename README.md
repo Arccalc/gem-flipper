@@ -80,3 +80,9 @@ GET https://poe.ninja/poe1/api/economy/stash/current/item/overview?league=Allfla
 ```
 
 Do not hammer the API: ninja data already updates about every 15 minutes. This app caches for 20 minutes.
+
+## Support the developer
+
+If Gem Flipper saves you time in trade, consider supporting development:
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/pixelcraft404)
